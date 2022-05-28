@@ -5,7 +5,6 @@ import quiz.Quiz;
 import quiz.QuizDb;
 import util.InterruptibleInputStream;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -13,7 +12,7 @@ import java.util.concurrent.*;
 
 public class QuizApp {
     public static void main(String[] args) {
-        System.out.println("What would you like to do?\r\n1 = Take a quiz\r\n2 = Create a new quiz");
+        System.out.println("What would you like to do?\r\n1 = Take a quiz\r\n2 = Create a new quiz\r\n3 = Generate default quiz");
 
         /*
           ExecutorService allows the usage of a timer
@@ -76,6 +75,9 @@ public class QuizApp {
                 List<Question> questions = getQuestionsForNewQuiz(stdio);
                 Quiz quiz = new Quiz(quizName, questions);
                 QuizDb.INSTANCE.addQuizToDb(quiz);
+            }
+            case 3 -> {
+                Creator.createDefaultQuiz();
             }
             default -> System.out.println("Please choose '1' if you wish to take a quiz, or '2' if you wish to create a new quiz");
         }

@@ -195,15 +195,4 @@ public enum QuizDb {
             return null;
         }
     }
-
-    /*
-      This will add the initial "Movies" Quiz to the DataBase
-      One time use
-     */
-//    public static void main(String args[]) {
-//        // Creator creator = new Creator();
-//        // quizDb.addQuizToDb(creator.createMoviesQuiz());
-//
-//        System.out.println(QuizDb.INSTANCE.getQuizzes());
-//    }
 }
