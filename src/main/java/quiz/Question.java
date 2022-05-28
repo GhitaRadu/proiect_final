@@ -1,11 +1,10 @@
 package quiz;
 
 import java.util.List;
-import java.util.Optional;
 
 public class Question {
-    private String questionText;
-    private List<Answer> answers;
+    private final String questionText;
+    private final List<Answer> answers;
 
     public Question(String questionText, List<Answer> answers) {
         this.questionText = questionText;

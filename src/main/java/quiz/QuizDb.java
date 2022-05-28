@@ -4,22 +4,23 @@ import java.util.*;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
+/**
+ * This is for making the connection between the Java code and the DataBase
+ */
 public enum QuizDb {
     INSTANCE;
 
     private static Connection connection;
 
-    private static String quizDbUrl = "jdbc:sqlite:quiz.db";
-
     static {
         try {
+            String quizDbUrl = "jdbc:sqlite:quiz.db";
             connection = DriverManager.getConnection(quizDbUrl);
             createTableForQuizzes();
             createTableForQuestions();
             createTableForAnswers();
         } catch (Exception ignored) {
             ignored.printStackTrace();
-            // FIXME: handle exception and gracefully exit
         }
     }
 
@@ -33,7 +34,6 @@ public enum QuizDb {
             statement.execute(createQuizTableQuery);
         } catch (Exception ignored) {
             ignored.printStackTrace();
-            // FIXME: treat exception
         }
     }
 
@@ -49,7 +49,6 @@ public enum QuizDb {
             statement.execute(createQuestionsTableQuery);
         } catch (Exception ignored) {
             ignored.printStackTrace();
-            // FIXME: treat exception
         }
     }
 
@@ -66,7 +65,6 @@ public enum QuizDb {
             statement.execute(createAnswersTablesQuery);
         } catch (Exception ignored) {
             ignored.printStackTrace();
-            // FIXME: treat exception
         }
     }
 
@@ -81,7 +79,6 @@ public enum QuizDb {
             return quizId;
         } catch (Exception ignored) {
             ignored.printStackTrace();
-            // FIXME: exceptions
         }
         return "";
     }
@@ -98,7 +95,6 @@ public enum QuizDb {
             return questionId;
         } catch (Exception ignored) {
             ignored.printStackTrace();
-            // FIXME: exceptions
         }
         return "";
     }
@@ -116,7 +112,6 @@ public enum QuizDb {
             return answerID;
         } catch (Exception ignored) {
             ignored.printStackTrace();
-            // FIXME: exceptions
         }
         return "";
     }
@@ -131,6 +126,9 @@ public enum QuizDb {
         }
     }
 
+    /**
+     * ImmutablePair will keep the Quiz name and the Quiz id in one variable
+     */
     public List<ImmutablePair<String, String>> getQuizzes() {
         try {
             Statement statement = connection.createStatement();
@@ -146,7 +144,6 @@ public enum QuizDb {
 
         } catch (Exception ignored) {
             ignored.printStackTrace();
-            // FIXME: exceptions
         }
         return null;
     }
@@ -169,7 +166,6 @@ public enum QuizDb {
             return answers;
         } catch (Exception ignored) {
             ignored.printStackTrace();
-            // FIXME: except
         }
         return null;
     }
@@ -196,11 +192,14 @@ public enum QuizDb {
             return new Quiz(quiz_name, questions);
         } catch (Exception ignored) {
             ignored.printStackTrace();
-            // FIXME: exceptions
             return null;
         }
     }
 
+    /*
+      This will add the initial "Movies" Quiz to the DataBase
+      One time use
+     */
 //    public static void main(String args[]) {
 //        // Creator creator = new Creator();
 //        // quizDb.addQuizToDb(creator.createMoviesQuiz());

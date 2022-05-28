@@ -9,6 +9,10 @@ public class Creator {
     public Creator() {
     }
 
+    /**
+     * This class has been created with the sole purpose of having an initial Quiz to work with,
+     * before finishing the "Quiz creator" part of the code
+     */
     public Quiz createMoviesQuiz() {
         List<Answer> answersForQuestion1 = new ArrayList<>();
         Answer answer1ForQuestion1 = new Answer("The Godfather", false);

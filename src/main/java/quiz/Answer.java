@@ -2,8 +2,8 @@ package quiz;
 
 public class Answer {
 
-    private String text;
-    private boolean correctness;
+    private final String text;
+    private final boolean correctness;
 
     public Answer(String text, boolean correctness) {
         this.text = text;
@@ -16,13 +16,5 @@ public class Answer {
 
     public boolean isCorrect() {
         return correctness;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public void setCorrectness(boolean correctness) {
-        this.correctness = correctness;
     }
 }
