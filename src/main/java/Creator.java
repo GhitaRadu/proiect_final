@@ -1,9 +1,11 @@
+import quiz.Answer;
+import quiz.Question;
+import quiz.Quiz;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Creator {
-    private List<Quiz> quizzes;
-
     public Creator() {
     }
 
