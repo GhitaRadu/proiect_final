@@ -1,19 +1,17 @@
 import quiz.Answer;
 import quiz.Question;
 import quiz.Quiz;
+import quiz.QuizDb;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Creator {
-    public Creator() {
-    }
-
     /**
      * This class has been created with the sole purpose of having an initial Quiz to work with,
      * before finishing the "Quiz creator" part of the code
      */
-    public Quiz createMoviesQuiz() {
+    private static Quiz createMoviesQuiz() {
         List<Answer> answersForQuestion1 = new ArrayList<>();
         Answer answer1ForQuestion1 = new Answer("The Godfather", false);
         Answer answer2ForQuestion1 = new Answer("Phantasm", true);
@@ -53,5 +51,14 @@ public class Creator {
         questions1.add(question3ForQuiz1);
         Quiz quiz1 = new Quiz("Movies", questions1);
         return quiz1;
+    }
+
+     /*
+     This will add the initial "Movies" Quiz to the DataBase
+     One time use
+    */
+    public static void createDefaultQuiz() {
+        QuizDb.INSTANCE.addQuizToDb(createMoviesQuiz());
+
     }
 }
