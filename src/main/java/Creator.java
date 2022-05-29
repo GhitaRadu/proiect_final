@@ -63,10 +63,6 @@ public class Creator {
         return new Quiz("Movies", questions1);
     }
 
-     /*
-     This will add the initial "Movies" Quiz to the DataBase
-     One time use
-    */
     public static void createDefaultQuiz() {
         QuizDb.INSTANCE.addQuizToDb(createMoviesQuiz());
     }

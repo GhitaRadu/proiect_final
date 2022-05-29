@@ -10,14 +10,16 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.*;
 
+/**
+ * Main app, used for either playing or creating a Quiz
+ */
 public class QuizApp {
     public static void main(String[] args) {
         System.out.println("What would you like to do?\r\n1 = Take a quiz\r\n2 = Create a new quiz\r\n3 = Generate default quiz");
 
-        /*
-          ExecutorService allows the usage of a timer
-          (Time allocated to answer a question)
-         */
+//          ExecutorService allows the usage of a timer
+//          (Time allocated to answer a question)
+
         try
         {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -29,17 +31,11 @@ public class QuizApp {
                 System.out.println("Please select a quiz that you want to take");
                 List<ImmutablePair<String, String>> quizzes = QuizDb.INSTANCE.getQuizzes();
 
-                /*
-                  This will list all the Quizzes for the user to choose
-                 */
                 for (int i = 0; i < quizzes.size(); i++) {
                     System.out.println(i + 1 + ") " + quizzes.get(i).getLeft());
                 }
                 int chosenQuiz = stdio.nextInt() - 1;
 
-                /*
-                  This will ensure that the user makes a valid choice
-                 */
                 boolean checkQuizChoice = 0 <= chosenQuiz && chosenQuiz < quizzes.size();
                 if (checkQuizChoice) {
                     int score = 0;
