@@ -47,10 +47,6 @@ public class QuizApp {
                     Quiz quiz = QuizDb.INSTANCE.getQuizFromDb(quizzes.get(chosenQuiz).getLeft(), quizzes.get(chosenQuiz).getRight());
                     int noOfQuestions = quiz.getQuestions().size();
 
-                    /*
-                      This will ensure that failing to answer the question before the time expires
-                      will not increase the score
-                     */
                     for (Question q : quiz.getQuestions()) {
                         Callable<Boolean> promptForAnswerTask = () -> promptForAnswer(q);
                         Future<Boolean> future = executorService.submit(promptForAnswerTask);
@@ -59,7 +55,10 @@ public class QuizApp {
                         } catch (ExecutionException | InterruptedException e) {
                             e.printStackTrace();
                         } catch (TimeoutException e) {
-                            System.out.println("Time to answer has expired");
+                            System.out.println("\r\nTime to answer has expired");
+                            for (Answer a:q.getAnswers()){
+                                if(a.isCorrect()){
+                            System.out.println("The correct answer was: " + a.getText() + "\r\n");}}
                         } finally {
                             future.cancel(true);
                         }
@@ -80,9 +79,9 @@ public class QuizApp {
                 Quiz quiz = new Quiz(quizName, questions);
                 QuizDb.INSTANCE.addQuizToDb(quiz);
             }
-            case 3 -> {
+            case 3 ->
                 Creator.createDefaultQuiz();
-            }
+
             default -> System.out.println("Please choose '1' if you wish to take a quiz, '2' if you wish to create a new quiz, or '3' if you wish to generate the default quiz");
         }} catch (InputMismatchException e){
             System.out.println("Please choose '1' if you wish to take a quiz, '2' if you wish to create a new quiz, or '3' if you wish to generate the default quiz");
@@ -132,9 +131,22 @@ public class QuizApp {
                     System.out.println("Answer must have a text");
                     return getAnswersForNewQuestion(stdio);
                 }
-                System.out.println("Is this answer true or false?");
-                boolean correct = stdio.next().equals("true");
-                answers.add(new Answer(answerText, correct));
+
+                while (true){
+                if(answers.stream().filter(Answer::isCorrect).toList().size() == 0) {
+                    System.out.println("Is this answer true or false?");
+                    String correct = stdio.next();
+                    if (correct.equals("true")) {
+                        answers.add(new Answer(answerText, true));break;
+                    } else {
+                        if (correct.equals("false")) {
+                            answers.add(new Answer(answerText, false));break;
+                        } else {
+                            System.out.println("Please specify the correctness of the answer using either 'true' or 'false'");
+                        }
+                    }
+                } else{
+                answers.add(new Answer(answerText, false));break;}}
 
             } else {
                 System.out.println("Please select 'yes' if you wish to add a new answer for this question," +
@@ -143,12 +155,9 @@ public class QuizApp {
         }
         if (answers.stream().filter(Answer::isCorrect).toList().size() == 1 && answers.size() >= 2) {
             return answers;
-        } else { if (answers.stream().filter(Answer::isCorrect).toList().size() != 1){
-            System.out.println("The answer list does not contain exactly one right answer");
-        }
-            else {
-            System.out.println("The answer list must contain at least one wrong answer, aside from the right answer!");
-        }
+        } else {
+            System.out.println("The answer list does not contain exactly one right answer and at least one wrong answer;" +
+                    "\r\nThe answers for the current question have been invalidated, please add them again");
             return getAnswersForNewQuestion(stdio);
         }
     }
@@ -167,6 +176,19 @@ public class QuizApp {
         }
         if (stdio.hasNextInt()) {
             int chosenAnswer = stdio.nextInt() - 1;
+            try{
+            if(q.getAnswers().get(chosenAnswer).isCorrect()){
+                System.out.println("\r\nYour answer is correct!\r\n");
+            }
+            else{
+                for (Answer a:q.getAnswers()) {
+                                if(a.isCorrect()){
+                                    System.out.println("\r\nIncorrect! The correct answer was: " + a.getText() + "\r\n");
+                                }}
+            }} catch (IndexOutOfBoundsException index){
+                System.out.println("\r\nInvalid answer! Please answer again using a number from 1 to "+ q.getAnswers().size() + " corresponding to each question");
+                return promptForAnswer(q);
+            }
             return 0 <= chosenAnswer && chosenAnswer < q.getAnswers().size() && q.getAnswers().get(chosenAnswer).isCorrect();
         }
         return false;

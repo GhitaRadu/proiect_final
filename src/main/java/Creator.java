@@ -60,8 +60,7 @@ public class Creator {
         questions1.add(question2ForQuiz1);
         questions1.add(question3ForQuiz1);
 
-        Quiz quiz1 = new Quiz("Movies", questions1);
-        return quiz1;
+        return new Quiz("Movies", questions1);
     }
 
      /*
