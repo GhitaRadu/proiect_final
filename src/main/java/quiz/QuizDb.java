@@ -128,6 +128,7 @@ public enum QuizDb {
 
     /**
      * ImmutablePair will keep the Quiz name and the Quiz id in one variable
+     * @return the list of available Quizzes
      */
     public List<ImmutablePair<String, String>> getQuizzes() {
         try {
@@ -169,7 +170,6 @@ public enum QuizDb {
         }
         return null;
     }
-
 
     public Quiz getQuizFromDb(String quiz_name, String quiz_id) {
         try {

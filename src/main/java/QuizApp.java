@@ -4,8 +4,8 @@ import quiz.Question;
 import quiz.Quiz;
 import quiz.QuizDb;
 import util.InterruptibleInputStream;
-
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.*;
@@ -18,6 +18,8 @@ public class QuizApp {
           ExecutorService allows the usage of a timer
           (Time allocated to answer a question)
          */
+        try
+        {
         ExecutorService executorService = Executors.newCachedThreadPool();
         Scanner stdio = new Scanner(new InterruptibleInputStream(System.in)).useDelimiter("\n");
         int userChoice = stdio.nextInt();
@@ -61,7 +63,6 @@ public class QuizApp {
                         } finally {
                             future.cancel(true);
                         }
-
                     }
                     System.out.printf("Quiz finished! Your score is %s/%s!%n", score, noOfQuestions);
                     executorService.shutdownNow();
@@ -72,6 +73,9 @@ public class QuizApp {
             case 2 -> {
                 System.out.println("Please choose a name for your quiz");
                 String quizName = stdio.next();
+                if (quizName == null || quizName.isEmpty() || quizName.isBlank()){
+                    System.out.println("Quiz must have a name"); break;
+                }
                 List<Question> questions = getQuestionsForNewQuiz(stdio);
                 Quiz quiz = new Quiz(quizName, questions);
                 QuizDb.INSTANCE.addQuizToDb(quiz);
@@ -79,7 +83,9 @@ public class QuizApp {
             case 3 -> {
                 Creator.createDefaultQuiz();
             }
-            default -> System.out.println("Please choose '1' if you wish to take a quiz, or '2' if you wish to create a new quiz");
+            default -> System.out.println("Please choose '1' if you wish to take a quiz, '2' if you wish to create a new quiz, or '3' if you wish to generate the default quiz");
+        }} catch (InputMismatchException e){
+            System.out.println("Please choose '1' if you wish to take a quiz, '2' if you wish to create a new quiz, or '3' if you wish to generate the default quiz");
         }
     }
 
@@ -93,6 +99,10 @@ public class QuizApp {
             else if (willAddNewQuestion.equals("yes")) {
                 System.out.println("Please insert the question:");
                 String questionText = stdio.next();
+                if (questionText == null || questionText.isEmpty() || questionText.isBlank()){
+                    System.out.println("Question must have a text");
+                    return getQuestionsForNewQuiz(stdio);
+                }
                 List<Answer> answers = getAnswersForNewQuestion(stdio);
                 questions.add(new Question(questionText, answers));
             } else {
@@ -100,7 +110,12 @@ public class QuizApp {
                         "or 'no' if you are satisfied with the current questions");
             }
         }
-        return questions;
+        if (questions.size() >= 1) {
+            return questions;
+        } else{
+            System.out.println("The quiz must contain at least one question");
+            return getQuestionsForNewQuiz(stdio);
+        }
     }
 
     private static List<Answer> getAnswersForNewQuestion(Scanner stdio) {
@@ -113,9 +128,14 @@ public class QuizApp {
             else if (willAddNewAnswer.equals("yes")) {
                 System.out.println("Please insert the answer:");
                 String answerText = stdio.next();
+                if (answerText == null || answerText.isBlank() || answerText.isEmpty()){
+                    System.out.println("Answer must have a text");
+                    return getAnswersForNewQuestion(stdio);
+                }
                 System.out.println("Is this answer true or false?");
                 boolean correct = stdio.next().equals("true");
                 answers.add(new Answer(answerText, correct));
+
             } else {
                 System.out.println("Please select 'yes' if you wish to add a new answer for this question," +
                         "or 'no' if you are satisfied with the current answers");
@@ -124,11 +144,10 @@ public class QuizApp {
         if (answers.stream().filter(Answer::isCorrect).toList().size() == 1 && answers.size() >= 2) {
             return answers;
         } else {
-            System.out.println("The answer list does not contain exactly one right answer");
+            System.out.println("The answer list does not contain exactly one right answer & at least one wrong answer");
             return getAnswersForNewQuestion(stdio);
         }
     }
-
 
     /**
      * Will prompt for an answer for the given question

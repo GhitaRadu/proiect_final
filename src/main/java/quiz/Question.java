@@ -1,5 +1,4 @@
 package quiz;
-
 import java.util.List;
 
 public class Question {
