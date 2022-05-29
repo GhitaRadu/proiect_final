@@ -143,8 +143,12 @@ public class QuizApp {
         }
         if (answers.stream().filter(Answer::isCorrect).toList().size() == 1 && answers.size() >= 2) {
             return answers;
-        } else {
-            System.out.println("The answer list does not contain exactly one right answer & at least one wrong answer");
+        } else { if (answers.stream().filter(Answer::isCorrect).toList().size() != 1){
+            System.out.println("The answer list does not contain exactly one right answer");
+        }
+            else {
+            System.out.println("The answer list must contain at least one wrong answer, aside from the right answer!");
+        }
             return getAnswersForNewQuestion(stdio);
         }
     }
