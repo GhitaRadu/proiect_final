@@ -68,6 +68,18 @@ public enum QuizDb {
         }
     }
 
+    public static void deleteDataFromTables() {
+        try {
+            String deleteTables = "DELETE FROM Quizzes;" +
+                    "DELETE FROM Questions;" +
+                    "DELETE FROM Answers;";
+            Statement statement = connection.createStatement();
+            statement.execute(deleteTables);
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
+        }
+    }
+
     private String indexQuizIntoDb(Quiz quiz) {
         try {
             String quizQuery = "INSERT INTO Quizzes VALUES (?, ?)";
