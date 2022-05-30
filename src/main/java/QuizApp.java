@@ -63,13 +63,15 @@ public class QuizApp {
                     executorService.shutdownNow();
                 } else {
                     System.out.println("Please choose a valid quiz");
+                    main(args);
                 }
             }
             case 2 -> {
                 System.out.println("Please choose a name for your quiz");
                 String quizName = stdio.next();
-                if (quizName == null || quizName.isEmpty() || quizName.isBlank()){
-                    System.out.println("Quiz must have a name"); break;
+                while (quizName == null || quizName.isEmpty() || quizName.isBlank()){
+                    System.out.println("Quiz must have a name! Please choose a name for your quiz");
+                    quizName = stdio.next();;
                 }
                 List<Question> questions = getQuestionsForNewQuiz(stdio);
                 Quiz quiz = new Quiz(quizName, questions);
@@ -78,9 +80,11 @@ public class QuizApp {
             case 3 ->
                 Creator.createDefaultQuiz();
 
-            default -> System.out.println("Please choose '1' if you wish to take a quiz, '2' if you wish to create a new quiz, or '3' if you wish to generate the default quiz");
+            default -> {System.out.println("Please choose '1' if you wish to take a quiz, '2' if you wish to create a new quiz, or '3' if you wish to generate the default quiz");
+            main(args);}
         }} catch (InputMismatchException e){
             System.out.println("Please choose '1' if you wish to take a quiz, '2' if you wish to create a new quiz, or '3' if you wish to generate the default quiz");
+            main(args);
         }
     }
 
@@ -94,9 +98,9 @@ public class QuizApp {
             else if (willAddNewQuestion.equals("yes")) {
                 System.out.println("Please insert the question:");
                 String questionText = stdio.next();
-                if (questionText == null || questionText.isEmpty() || questionText.isBlank()){
-                    System.out.println("Question must have a text");
-                    return getQuestionsForNewQuiz(stdio);
+                while (questionText == null || questionText.isEmpty() || questionText.isBlank()){
+                    System.out.println("Question must have a text! Please insert the question:");
+                    questionText = stdio.next();
                 }
                 List<Answer> answers = getAnswersForNewQuestion(stdio);
                 questions.add(new Question(questionText, answers));
@@ -119,13 +123,33 @@ public class QuizApp {
             System.out.println("Would you like to add a new answer for this question?");
             String willAddNewAnswer = stdio.next();
 
-            if (willAddNewAnswer.equals("no")) break;
+            if (willAddNewAnswer.equals("no")){
+                if(answers.stream().filter(Answer::isCorrect).toList().size() == 0){
+                    System.out.println("It seems there is no correct answer to this question. Please add a correct answer:");
+                    String answerText = stdio.next();
+                    while (answerText == null || answerText.isBlank() || answerText.isEmpty()){
+                        System.out.println("Answer must have a text! Please insert the answer:");
+                        answerText = stdio.next();
+                    }
+                    answers.add(new Answer(answerText, true));
+                }
+                if(answers.size() <= 1){
+                    System.out.println("This question does not have any incorrect answers. Please add an incorrect answer:");
+                    String answerText = stdio.next();
+                    while (answerText == null || answerText.isBlank() || answerText.isEmpty()){
+                        System.out.println("Answer must have a text! Please insert the answer:");
+                        answerText = stdio.next();
+                    }
+                    answers.add(new Answer(answerText, false));
+                }
+                break;
+            }
             else if (willAddNewAnswer.equals("yes")) {
                 System.out.println("Please insert the answer:");
                 String answerText = stdio.next();
-                if (answerText == null || answerText.isBlank() || answerText.isEmpty()){
-                    System.out.println("Answer must have a text");
-                    return getAnswersForNewQuestion(stdio);
+                while (answerText == null || answerText.isBlank() || answerText.isEmpty()){
+                    System.out.println("Answer must have a text! Please insert the answer:");
+                    answerText = stdio.next();
                 }
 
                 while (true){
@@ -144,7 +168,10 @@ public class QuizApp {
                 } else{
                 answers.add(new Answer(answerText, false));break;}}
 
-            } else {
+            } else { if (willAddNewAnswer.equals("reset")){
+                System.out.println("The answers for the current question have been deleted");
+                return getAnswersForNewQuestion(stdio);
+            }
                 System.out.println("Please select 'yes' if you wish to add a new answer for this question," +
                         "or 'no' if you are satisfied with the current answers");
             }
@@ -153,7 +180,7 @@ public class QuizApp {
             return answers;
         } else {
             System.out.println("The answer list does not contain exactly one right answer and at least one wrong answer;" +
-                    "\r\nThe answers for the current question have been invalidated, please add them again");
+                    "The answers for the current question have been invalidated, please add them again!");
             return getAnswersForNewQuestion(stdio);
         }
     }
