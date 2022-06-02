@@ -1,6 +1,7 @@
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import quiz.*;
 import util.InterruptibleInputStream;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.*;
@@ -91,6 +92,7 @@ public class QuizApp {
                     main(args);
                 }
             }}
+
             case 2 -> {
                 System.out.println("Please choose a name for your quiz");
                 String quizName = stdio.next();
@@ -175,11 +177,7 @@ public class QuizApp {
                         String clearChoice = stdio.next().toLowerCase();
                         if (clearChoice.equals("yes")){
                             QuizDb.deleteScores(quizzes.get(chosenQuiz).getRight());
-                            if (QuizDb.INSTANCE.getResultsForQuiz(quizzes.get(chosenQuiz).getRight()).isEmpty()) {
-                                System.out.printf("Scoreboard for the '%s' quiz has been cleared\r\n\r\n", quizzes.get(chosenQuiz).getLeft());
-                            } else {
-                                System.out.println("Task failed\r\n");
-                            }
+                            System.out.printf("Scoreboard for the '%s' quiz has been cleared\r\n\r\n", quizzes.get(chosenQuiz).getLeft());
                         } else {
                             System.out.println("Scores have not been deleted\r\n");
                         }
@@ -208,10 +206,7 @@ public class QuizApp {
                             quiz.QuizDb.deleteAnswers(quizzes.get(chosenQuiz).getLeft());
                             quiz.QuizDb.deleteQuestions(quizzes.get(chosenQuiz).getLeft());
                             quiz.QuizDb.deleteQuiz(quizzes.get(chosenQuiz).getLeft());
-                            if (!QuizDb.INSTANCE.getQuizzes().contains(QuizDb.INSTANCE.getQuizFromDb(quizzes.get(chosenQuiz).getLeft(), quizzes.get(chosenQuiz).getRight()))){
-                                System.out.printf("\r\nQuiz '%s' was successfully deleted\r\n\r\n", quizzes.get(chosenQuiz).getLeft());} else {
-                                System.out.println("\r\n Something went wrong! The quiz was not deleted.\r\n");
-                            }
+                            System.out.printf("\r\nQuiz '%s' was successfully deleted\r\n\r\n", quizzes.get(chosenQuiz).getLeft());
                             main(args);
                         } else {
                             System.out.println("\r\nNothing happened, list is intact\r\n");
@@ -246,6 +241,9 @@ public class QuizApp {
         }} catch (InputMismatchException e){
             System.out.println("Please choose one of the options from 1 - 8\r\n");
             main(args);
+        } catch (SQLException sqlException) {
+            System.out.println("Something went wrong with the DataBase");
+            System.exit(1);
         }
     }
 
@@ -397,7 +395,7 @@ public class QuizApp {
             System.out.println("\r\nInvalid answer! Please answer again using a number from 1 to "+ q.getAnswers().size() + " corresponding to each question");
             return promptForAnswer(q);
         }
-    }catch (InputMismatchException e){
+    } catch (InputMismatchException e){
         System.out.println("Please choose a valid answer!"); return promptForAnswer(q);}
     }
 

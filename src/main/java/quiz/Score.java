@@ -1,8 +1,8 @@
 package quiz;
 
 public class Score {
-    String nickname;
-    int points;
+    private final String nickname;
+    private final int points;
 
     public Score(String nickname, int points) {
         this.nickname = nickname;

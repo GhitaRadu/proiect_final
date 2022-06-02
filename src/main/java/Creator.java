@@ -2,6 +2,7 @@ import quiz.Answer;
 import quiz.Question;
 import quiz.Quiz;
 import quiz.QuizDb;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class Creator {
         return new Quiz("Movies", questions1);
     }
 
-    public static void createDefaultQuiz() {
+    public static void createDefaultQuiz() throws SQLException {
         QuizDb.INSTANCE.addQuizToDb(createMoviesQuiz());
     }
 }
