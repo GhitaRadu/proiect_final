@@ -199,12 +199,12 @@ public class QuizApp {
                     int chosenQuiz = stdio.nextInt() - 1;
                     boolean checkQuizChoice = 0 <= chosenQuiz && chosenQuiz < quizzes.size();
                     if (checkQuizChoice) {
-                        System.out.println("Are you sure you want to permanently delete quiz " + quizzes.get(chosenQuiz).getLeft() + " ?");
+                        System.out.println("Are you sure you want to permanently delete quiz '" + quizzes.get(chosenQuiz).getLeft() + "' ?");
                         String makeSure = stdio.next().toLowerCase();
                         if (makeSure.equals("yes")){
-                            quiz.QuizDb.deleteScores(quizzes.get(chosenQuiz).getLeft());
-                            quiz.QuizDb.deleteAnswers(quizzes.get(chosenQuiz).getLeft());
-                            quiz.QuizDb.deleteQuestions(quizzes.get(chosenQuiz).getLeft());
+                            quiz.QuizDb.deleteScores(quizzes.get(chosenQuiz).getRight());
+                            quiz.QuizDb.deleteAnswers(quizzes.get(chosenQuiz).getRight());
+                            quiz.QuizDb.deleteQuestions(quizzes.get(chosenQuiz).getRight());
                             quiz.QuizDb.deleteQuiz(quizzes.get(chosenQuiz).getLeft());
                             System.out.printf("\r\nQuiz '%s' was successfully deleted\r\n\r\n", quizzes.get(chosenQuiz).getLeft());
                             main(args);
@@ -220,7 +220,10 @@ public class QuizApp {
                 System.out.println("Are you sure you want to delete all quizzes, along with their questions and answers?");
                 String makeSure = stdio.next().toLowerCase();
                 if(Objects.equals(makeSure, "yes")){
-                    QuizDb.deleteDataFromTables();
+                    QuizDb.deleteDataFromQuizzes();
+                    QuizDb.deleteDataFromQuestions();
+                    QuizDb.deleteDataFromAnswers();
+                    QuizDb.deleteDataFromScoreboard();
                     if (QuizDb.INSTANCE.getQuizzes().isEmpty()){
                     System.out.println("\r\nAll quizzes have been successfully deleted\r\n");}
                     else {

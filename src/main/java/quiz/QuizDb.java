@@ -71,13 +71,28 @@ public enum QuizDb {
             statement.execute(createScoreboardTablesQuery);
     }
 
-    public static void deleteDataFromTables() throws SQLException {
-            String deleteTables = "DELETE FROM Quizzes;" +
-                    "DELETE FROM Questions;" +
-                    "DELETE FROM Answers;" +
-                    "DELETE FROM Scoreboard;";
-            Statement statement = connection.createStatement();
-            statement.execute(deleteTables);
+    public static void deleteDataFromQuizzes() throws SQLException {
+        String deleteTables = "DELETE FROM Quizzes;";
+        Statement statement = connection.createStatement();
+        statement.execute(deleteTables);
+    }
+
+    public static void deleteDataFromQuestions() throws SQLException {
+        String deleteTables = "DELETE FROM Questions;";
+        Statement statement = connection.createStatement();
+        statement.execute(deleteTables);
+    }
+
+    public static void deleteDataFromAnswers() throws SQLException {
+        String deleteTables = "DELETE FROM Answers;";
+        Statement statement = connection.createStatement();
+        statement.execute(deleteTables);
+    }
+
+    public static void deleteDataFromScoreboard() throws SQLException {
+        String deleteTables = "DELETE FROM Scoreboard;";
+        Statement statement = connection.createStatement();
+        statement.execute(deleteTables);
     }
 
     public static void deleteQuiz (String quiz_name) throws SQLException {
