@@ -48,11 +48,11 @@ public class Creator {
         answersForQuestion3.add(answer4ForQuestion3);
 
         Question question1ForQuiz1 = new Question("Which of the following movie was directed by Don Coscarelli?",
-                answersForQuestion1);
+                answersForQuestion1, 20);
         Question question2ForQuiz1 = new Question("Which of the following actors has never won an Oscar for acting?",
-                answersForQuestion2);
+                answersForQuestion2, 20);
         Question question3ForQuiz1 = new Question("In what year was the movie Se7en released?",
-                answersForQuestion3);
+                answersForQuestion3, 20);
 
         List<Question> questions1 = new ArrayList<>();
 

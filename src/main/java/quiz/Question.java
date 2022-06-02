@@ -4,10 +4,12 @@ import java.util.List;
 public class Question {
     private final String questionText;
     private final List<Answer> answers;
+    private final int timer;
 
-    public Question(String questionText, List<Answer> answers) {
+    public Question(String questionText, List<Answer> answers, int timer) {
         this.questionText = questionText;
         this.answers = answers;
+        this.timer = timer;
     }
 
     public String getQuestionText() {
@@ -16,5 +18,9 @@ public class Question {
 
     public List<Answer> getAnswers() {
         return answers;
+    }
+
+    public int getTimer() {
+        return timer;
     }
 }

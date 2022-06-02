@@ -1,7 +1,6 @@
 package quiz;
 import java.sql.*;
 import java.util.*;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 /**
@@ -19,6 +18,7 @@ public enum QuizDb {
             createTableForQuizzes();
             createTableForQuestions();
             createTableForAnswers();
+            createTableForScoreboard();
         } catch (Exception ignored) {
             ignored.printStackTrace();
         }
@@ -43,6 +43,7 @@ public enum QuizDb {
                     + "question_id VARCHAR(255) PRIMARY KEY,"
                     + "quiz_id VARCHAR(255),"
                     + "question VARCHAR(4096),"
+                    + "timer INTEGER,"
                     + "FOREIGN KEY (quiz_id) REFERENCES Quizzes (quiz_id)"
                     + ")";
             Statement statement = connection.createStatement();
@@ -68,15 +69,75 @@ public enum QuizDb {
         }
     }
 
+    public static void createTableForScoreboard() {
+        try {
+            String createScoreboardTablesQuery = "CREATE TABLE IF NOT EXISTS Scoreboard("
+                    + "nickname_id VARCHAR(255) PRIMARY KEY,"
+                    + "quiz_id VARCHAR(255),"
+                    + "nickname VARCHAR(255),"
+                    + "points INTEGER,"
+                    + "FOREIGN KEY (quiz_id) REFERENCES Quizzes (quiz_id)"
+                    + ")";
+            Statement statement = connection.createStatement();
+            statement.execute(createScoreboardTablesQuery);
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
+        }
+    }
+
     public static void deleteDataFromTables() {
         try {
             String deleteTables = "DELETE FROM Quizzes;" +
                     "DELETE FROM Questions;" +
-                    "DELETE FROM Answers;";
+                    "DELETE FROM Answers;" +
+                    "DELETE FROM Scoreboard;";
             Statement statement = connection.createStatement();
             statement.execute(deleteTables);
         } catch (Exception ignored) {
             ignored.printStackTrace();
+        }
+    }
+
+    public static void deleteQuiz (String quiz_name) {
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Quizzes WHERE quiz_name = ?");
+            preparedStatement.setString(1, quiz_name);
+            preparedStatement.executeUpdate();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteQuestions (String quiz_id) {
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Questions WHERE quiz_id = ?");
+            preparedStatement.setString(1, quiz_id);
+            preparedStatement.executeUpdate();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteAnswers (String question_id) {
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Answers WHERE question_id=?");
+            preparedStatement.setString(1, question_id);
+            preparedStatement.executeUpdate();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteScores (String quiz_id) {
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Scoreboard WHERE quiz_id=?");
+            preparedStatement.setString(1, quiz_id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -97,12 +158,13 @@ public enum QuizDb {
 
     private String indexQuestionIntoDb(Question question, String quizId) {
         try {
-            String questionQuery = "INSERT INTO Questions VALUES(?, ?, ?)";
+            String questionQuery = "INSERT INTO Questions VALUES(?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(questionQuery);
             String questionId = UUID.randomUUID().toString();
             preparedStatement.setString(1, questionId);
             preparedStatement.setString(2, quizId);
             preparedStatement.setString(3, question.getQuestionText());
+            preparedStatement.setInt(4, question.getTimer());
             preparedStatement.execute();
             return questionId;
         } catch (Exception ignored) {
@@ -111,7 +173,7 @@ public enum QuizDb {
         return "";
     }
 
-    private String indexAnswerIntoDb(Answer answer, String questionID) {
+    private void indexAnswerIntoDb(Answer answer, String questionID) {
         try{
             String answerQuery = "INSERT INTO Answers VALUES(?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(answerQuery);
@@ -121,11 +183,24 @@ public enum QuizDb {
             preparedStatement.setString(3, answer.getText());
             preparedStatement.setInt(4, answer.isCorrect() ? 1 : 0);
             preparedStatement.execute();
-            return answerID;
         } catch (Exception ignored) {
             ignored.printStackTrace();
         }
-        return "";
+    }
+
+    private void indexScoreIntoDb(Score score, String quizID){
+        try {
+            String nicknameQuery = "INSERT INTO Scoreboard VALUES (?, ?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(nicknameQuery);
+            String scoreID = UUID.randomUUID().toString();
+            preparedStatement.setString(1, scoreID);
+            preparedStatement.setString(2, quizID);
+            preparedStatement.setString(3, score.getNickname());
+            preparedStatement.setInt(4, score.getPoints());
+            preparedStatement.execute();
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
+        }
     }
 
     public void addQuizToDb(Quiz quiz) {
@@ -136,6 +211,10 @@ public enum QuizDb {
                 indexAnswerIntoDb(a, questionId);
             }
         }
+    }
+
+    public void addScoreToDb(Score score, String quizID){
+        indexScoreIntoDb(score, quizID);
     }
 
     /**
@@ -155,6 +234,26 @@ public enum QuizDb {
             }
             return quizzes;
 
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Score> getResultsForQuiz(String quiz_id) {
+        try {
+            String getScoresForQuizFromDbQuery = "SELECT * FROM Scoreboard " +
+                    "INNER JOIN Quizzes ON Quizzes.quiz_id=Scoreboard.quiz_id " +
+                    "WHERE Quizzes.quiz_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(getScoresForQuizFromDbQuery);
+            preparedStatement.setString(1, quiz_id);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            List<Score> scores = new ArrayList<>();
+            while (rs.next()) {
+                scores.add(new Score(rs.getString("nickname"), rs.getInt("points")));
+            }
+            return scores;
         } catch (Exception ignored) {
             ignored.printStackTrace();
         }
@@ -198,8 +297,9 @@ public enum QuizDb {
             while (rs.next()) {
                 String question_id = rs.getString("question_id");
                 String questionText = rs.getString("question");
+                int timer = rs.getInt("timer");
                 List<Answer> answers = getAnswersForQuestion(question_id);
-                questions.add(new Question(questionText, answers));
+                questions.add(new Question(questionText, answers, timer));
             }
             return new Quiz(quiz_name, questions);
         } catch (Exception ignored) {
