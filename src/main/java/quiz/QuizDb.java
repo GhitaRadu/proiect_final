@@ -95,9 +95,9 @@ public enum QuizDb {
         statement.execute(deleteTables);
     }
 
-    public static void deleteQuiz (String quiz_name) throws SQLException {
-            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Quizzes WHERE quiz_name = ?");
-            preparedStatement.setString(1, quiz_name);
+    public static void deleteQuiz (String quiz_id) throws SQLException {
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Quizzes WHERE quiz_id = ?");
+            preparedStatement.setString(1, quiz_id);
             preparedStatement.executeUpdate();
     }
 

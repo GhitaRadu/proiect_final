@@ -205,7 +205,7 @@ public class QuizApp {
                             quiz.QuizDb.deleteScores(quizzes.get(chosenQuiz).getRight());
                             quiz.QuizDb.deleteAnswers(QuizDb.INSTANCE.getQuestionsFromDb(quizzes.get(chosenQuiz).getRight()));
                             quiz.QuizDb.deleteQuestions(quizzes.get(chosenQuiz).getRight());
-                            quiz.QuizDb.deleteQuiz(quizzes.get(chosenQuiz).getLeft());
+                            quiz.QuizDb.deleteQuiz(quizzes.get(chosenQuiz).getRight());
                             System.out.printf("\r\nQuiz '%s' was successfully deleted\r\n\r\n", quizzes.get(chosenQuiz).getLeft());
                             main(args);
                         } else {
