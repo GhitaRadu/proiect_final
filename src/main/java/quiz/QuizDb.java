@@ -107,10 +107,11 @@ public enum QuizDb {
             preparedStatement.executeUpdate();
     }
 
-    public static void deleteAnswers (String question_id) throws SQLException {
+    public static void deleteAnswers (List<String> questionList) throws SQLException {
+        for (String s:questionList){
             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Answers WHERE question_id=?");
-            preparedStatement.setString(1, question_id);
-            preparedStatement.executeUpdate();
+            preparedStatement.setString(1, s);
+            preparedStatement.executeUpdate();}
     }
 
     public static void deleteScores (String quiz_id) throws SQLException {
@@ -192,6 +193,18 @@ public enum QuizDb {
                 );
             }
             return quizzes;
+    }
+
+    public List<String> getQuestionsFromDb(String quiz_id) throws SQLException {
+        String getQuestions = "SELECT * FROM Questions WHERE quiz_id=?";
+        PreparedStatement preparedStatement = connection.prepareStatement(getQuestions);
+        preparedStatement.setString(1, quiz_id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        List<String> questionList = new ArrayList<>();
+        while (resultSet.next()) {
+            questionList.add(resultSet.getString("question_id"));
+        } return questionList;
     }
 
     public List<Score> getResultsForQuiz(String quiz_id) throws SQLException {

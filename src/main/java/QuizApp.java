@@ -203,7 +203,7 @@ public class QuizApp {
                         String makeSure = stdio.next().toLowerCase();
                         if (makeSure.equals("yes")){
                             quiz.QuizDb.deleteScores(quizzes.get(chosenQuiz).getRight());
-                            quiz.QuizDb.deleteAnswers(quizzes.get(chosenQuiz).getRight());
+                            quiz.QuizDb.deleteAnswers(QuizDb.INSTANCE.getQuestionsFromDb(quizzes.get(chosenQuiz).getRight()));
                             quiz.QuizDb.deleteQuestions(quizzes.get(chosenQuiz).getRight());
                             quiz.QuizDb.deleteQuiz(quizzes.get(chosenQuiz).getLeft());
                             System.out.printf("\r\nQuiz '%s' was successfully deleted\r\n\r\n", quizzes.get(chosenQuiz).getLeft());
