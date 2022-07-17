@@ -148,10 +148,10 @@ public class QuizApp {
             }
 
             case 4 -> {
-                        Creator.createDefaultQuiz();
-                        System.out.println("\r\nThe default quiz 'Movies' has been generated\r\n");
-                        main(args);
-                }
+                Creator.createDefaultQuiz();
+                System.out.println("\r\nThe default quiz 'Movies' has been generated\r\n");
+                main(args);
+            }
 
             case 5 -> {
                 System.out.println("Please select a quiz to clear its scoreboard");
